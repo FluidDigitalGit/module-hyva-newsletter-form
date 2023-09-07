@@ -1,0 +1,99 @@
+<script>
+    function ContactForm() {
+        return {
+             // We validate email address by JS as HTML5 accepts email without domain but Magento doesn't
+            // so, we can avoid sending request to the server using JS
+            validateEmail: (email) => {
+                return String(email)
+                .toLowerCase()
+                .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                );
+            },
+            formData: {
+                email: "",
+            },
+            buttonDisabled: false,
+            result: '',
+            submitForm() {
+                if(this.validateEmail(this.formData.email)) {
+                    this.buttonDisabled = true;
+
+                    //START FETCH
+                    const query = `
+                        mutation($email: String!) {
+                            subscribeEmailToNewsletter(
+                                email: $email
+                            ) {
+                                status
+                            }
+                        }
+                    `;
+
+                    const variables = {
+                        email: this.formData.email
+                    };
+
+                    const options = {
+                        'method': 'POST',
+                        'headers': { 'Content-Type': 'application/json' },
+                        'body': JSON.stringify( { query, variables } )
+                    }
+
+                    fetch(`${BASE_URL}graphql`, options)
+                        .then(res => {
+                            this.buttonDisabled = false;
+
+                            if(!res.ok) {
+                                this.result = 'An error has occurred, please try again'
+                            }
+                            return res.json();
+                        })
+                        .then(res => {
+
+                            const {
+                                data,
+                                errors
+                            } = res;
+
+                            if(data.subscribeEmailToNewsletter) {
+                                const {
+                                    status
+                                } = data.subscribeEmailToNewsletter;
+
+                                if(status === 'SUBSCRIBED') {
+                                    this.result = 'Your email has been susbcribed, Thank you for your subscription.';
+                                }
+                            }
+
+                            if(errors) {
+                                const message = errors[0].message;
+                                console.log(message)
+                                this.result = message;
+                            }
+
+                            
+                        })
+                        .catch(error => {
+                            this.result = 'An error has occurred, please try again';
+                        })
+                } else {
+                    this.result = 'Please enter a valid email address.';
+                }
+            },
+        };
+    }
+</script>
+<section class="max-w-548px mx-auto py-16 text-center">
+    <h2 class="text-xl font-semibold mb-2 sm:text-h2 sm:mb-4.5"><?= $escaper->escapeHtml(__('Subscribe To Our Emails')) ?></h2>
+    <p class="mb-5 sm:mb-5.5">
+        <label class="m-0" for="email"><?= $escaper->escapeHtml(__('For the latest news, offers and more!')) ?></label>
+    </p>
+    <form class="" x-data="ContactForm()" @submit.prevent="submitForm">
+        <div class="flex flex-wrap justify-center md:justify-start md:whitespace-nowrap sm:flex-nowrap gap-3">
+            <input id="email" class="form-input border-black w-full text-xsm text-center sm:text-left sm:text-base" type="email" name="email" placeholder="<?= $escaper->escapeHtmlAttr(__('Enter your email address')) ?>" required x-model="formData.email" />
+            <button class="inline-flex flex-shrink-0 btn btn-primary w-full sm:w-auto" x-bind:disabled="buttonDisabled" :class="buttonDisabled ? 'opacity-50 cursor-not-allowed' : ''"><?= $escaper->escapeHtml(__('Subscribe')) ?></button>
+        </div>
+        <span x-text="result" class="text-left block" :class="result ? 'pt-10' : ''"></span>
+    </form>
+</section>

@@ -1,0 +1,23 @@
+{
+    "name": "fluid/hyva-newsletter-form",
+    "description": "Fluid Sign up form using JS (No reloading) module for Hyva theme",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Abdel Samadi",
+            "email": "abdel@fluidcommerce.co.uk"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Fluid\\HyvaNewsletterForm\\": ""
+        }
+    },
+    "require": {
+        "hyva-themes/magento2-theme-module": "*"
+    }
+}
