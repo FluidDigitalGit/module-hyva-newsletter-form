@@ -84,14 +84,14 @@
         };
     }
 </script>
-<section class="max-w-548px mx-auto py-12 text-center bg-gray-300 px-2">
-    <h2 class="text-2xl"><?= $escaper->escapeHtml(__('Subscribe To Our Emails')) ?></h2>
-    <p class="m">
-        <label class="m-0" for="email"><?= $escaper->escapeHtml(__('For the latest news, offers and more!')) ?></label>
-    </p>
-    <form class="mx-auto mt-4 max-w-md" x-data="ContactForm()" @submit.prevent="submitForm">
-        <div class="grid grid-flow-col gap-2">
-            <input id="email" class="" type="email" name="email" placeholder="<?= $escaper->escapeHtmlAttr(__('Enter your email address')) ?>" required x-model="formData.email" />
+<section class="py-12 text-center bg-gray-300 px-2">
+    <form class="max-w-548px mx-auto max-w-md" x-data="ContactForm()" @submit.prevent="submitForm">
+        <h2 class="text-2xl"><?= $escaper->escapeHtml(__('Subscribe To Our Emails')) ?></h2>
+        <p class="m">
+            <label class="m-0" for="email"><?= $escaper->escapeHtml(__('For the latest news, offers and more!')) ?></label>
+        </p>
+        <div class="grid grid-flow-col gap-2 mt-4">
+            <input id="email" class="text-base" type="email" name="email" placeholder="<?= $escaper->escapeHtmlAttr(__('Enter your email address')) ?>" required x-model="formData.email" />
             <button class="btn btn-primary justify-center" x-bind:disabled="buttonDisabled" :class="buttonDisabled ? 'opacity-50 cursor-not-allowed' : ''"><?= $escaper->escapeHtml(__('Subscribe')) ?></button>
         </div>
         <span x-text="result" class="text-left block text-sm" :class="result ? 'pt-1' : ''"></span>
